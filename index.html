@@ -2131,13 +2131,15 @@ function renderFinalQuizResult(mount){
   };
 }
 
-function renderPaperSection(sec, prefix){
+function renderPaperQuestion(q, sectionPrefix, qIdx){
+  const idPrefix = sectionPrefix+qIdx;
   let html = '<div class="paper-sheet">'
-    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><h3 style="font-family:var(--font-display);font-size:15px;color:var(--teal)">'+sec.label+'</h3><span class="pill '+(prefix==="A"?"amber":"teal")+'">'+sec.note+'</span></div>'
-    + '<div class="paper-q-block"><div class="paper-q-num">'+sec.title+'</div>'
-    + (sec.stem ? '<div class="paper-q-text">'+sec.stem+'</div>' : '')
-    + sec.parts.map((p,i)=>{
-        const solId = prefix+"-sol-"+i;
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px"><h3 style="font-family:var(--font-display);font-size:15px;color:var(--teal)">'+q.qnum+' — '+q.title+'</h3><span class="pill '+(sectionPrefix==="A"?"amber":"teal")+'">'+q.marks+' · '+q.note+'</span></div>'
+    + (q.stem ? '<div class="paper-q-text">'+q.stem+'</div>' : '')
+    + (q.table ? '<div class="data-table-wrap"><table class="data-table"><thead><tr>'+q.table.headers.map(h=>"<th>"+h+"</th>").join("")+'</tr></thead><tbody>'+q.table.rows.map(r=>"<tr>"+r.map(c=>"<td>"+c+"</td>").join("")+"</tr>").join("")+'</tbody></table></div>' : '')
+    + '<div class="paper-q-block">'
+    + q.parts.map((p,i)=>{
+        const solId = idPrefix+"-sol-"+i;
         let inner = '<div class="paper-sub"><div class="paper-sub-label">'+p.label+' '+p.marks+'</div><div class="paper-q-text">'+p.text+'</div>';
         if(p.table){
           inner += '<div class="data-table-wrap"><table class="data-table"><thead><tr>'+p.table.headers.map(h=>"<th>"+h+"</th>").join("")+'</tr></thead><tbody>'+p.table.rows.map(r=>"<tr>"+r.map(c=>"<td>"+c+"</td>").join("")+"</tr>").join("")+'</tbody></table></div>';
@@ -2158,8 +2160,10 @@ function renderModelPaper(){
     + '<h3>'+MODEL_PAPER.subtitle+'</h3>'
     + '<div class="ps-meta">'+MODEL_PAPER.meta+'</div>'
     + '</div></div>';
-  html += renderPaperSection(MODEL_PAPER.sectionA, "A");
-  html += renderPaperSection(MODEL_PAPER.sectionB, "B");
+  html += '<h3 class="syllabus-section-title">'+MODEL_PAPER.sectionALabel+'</h3>';
+  MODEL_PAPER.sectionA.forEach((q,idx)=>{ html += renderPaperQuestion(q, "A", idx); });
+  html += '<h3 class="syllabus-section-title">'+MODEL_PAPER.sectionBLabel+'</h3>';
+  MODEL_PAPER.sectionB.forEach((q,idx)=>{ html += renderPaperQuestion(q, "B", idx); });
   container.innerHTML = html;
 
   container.querySelectorAll(".paper-sol-btn").forEach(btn=>{
