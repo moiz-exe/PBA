@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ Physics PBA
+# ⚡ Physics PBA HSSC
 
 ### Interactive Physics Practical Learning Platform
 
